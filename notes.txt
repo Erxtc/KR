@@ -1,0 +1,5 @@
+System for counting reads for web vs for download to separate
+1GB max per peron
+
+Can be used by governments, if someone realizes a restaurant may not be as clean as a score suggests they can vote against it
+

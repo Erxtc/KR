@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Knowledge Router</title>
+<link rel="icon" href="/favicon.ico" />
+<link rel="stylesheet" href="/app.css" />
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="mark" aria-hidden="true"></span>
+    <span class="name">Knowledge&nbsp;Router</span>
+  </div>
+
+  <nav class="tabs" id="tabs" aria-label="views">
+    <button class="tab" data-view="markets">markets<span class="n" id="nMarkets">0</span></button>
+    <button class="tab" data-view="objects">objects<span class="n" id="nObjects">0</span></button>
+    <button class="tab" data-view="classes">classes<span class="n" id="nClasses">0</span></button>
+    <button class="tab" data-view="assumptions">assumptions<span class="n" id="nAssumptions">0</span></button>
+    <button class="tab" data-view="gaps">gaps<span class="n" id="nIssues">0</span></button>
+  </nav>
+
+  <div class="search">
+    <input id="q" type="search" placeholder="filter…" autocomplete="off" spellcheck="false" aria-label="filter" />
+    <kbd>/</kbd>
+  </div>
+
+  <button class="btn primary" id="newBtn">＋ new</button>
+</header>
+
+<main class="main">
+  <aside class="side">
+    <div class="side-head">
+      <span id="listTitle">markets</span>
+      <span class="dim" id="listCount"></span>
+    </div>
+    <div class="list" id="list" role="listbox" aria-label="items"></div>
+    <div class="side-foot" id="sideFoot"></div>
+  </aside>
+
+  <section class="detail" id="detail">
+    <div class="empty">loading…</div>
+  </section>
+</main>
+
+<dialog id="newDialog" class="dlg">
+  <form method="dialog" id="newForm">
+    <h2>new <span id="newKind">object</span></h2>
+    <label class="field">
+      <span id="newNameLabel">name</span>
+      <input id="newName" required autocomplete="off" spellcheck="false" placeholder="NS, scammer, Deliberately deceives people" />
+    </label>
+    <label class="field">
+      <span id="newDefLabel">definition</span>
+      <textarea id="newDef" rows="3" placeholder="what the name means, so it can be applied the same way twice"></textarea>
+    </label>
+    <label class="field" id="newBindsField" hidden>
+      <span>binds to (optional)</span>
+      <input id="newBinds" autocomplete="off" spellcheck="false" placeholder="NS.is.scammer — free text, so a market can price anything" />
+    </label>
+    <label class="field">
+      <span id="newPriceLabel">price (optional)</span>
+      <input id="newPrice" autocomplete="off" spellcheck="false" placeholder="62% — leave empty if nobody has staked yet" />
+    </label>
+    <p class="dlg-note" id="newNote"></p>
+    <div class="dlg-actions">
+      <button class="btn" value="cancel" formnovalidate>cancel</button>
+      <button class="btn primary" value="ok" id="newOk">create</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="/app.js"></script>
+</body>
+</html>
