@@ -1,7 +1,7 @@
 from sqlmodel import select
 
 from db.db import get_session
-from db.schema import Assumption, AssumptionMatching, Class, EntityKind, Is_, Object
+from db.schema import Assumption, AssumptionMatching, Class, Entity, EntityKind, Is_
 
 
 class ObjectNotFoundError(Exception):
@@ -16,10 +16,10 @@ class AssumptionNotFoundError(Exception):
     pass
 
 
-def get_object(name: str) -> Object:
+def get_object(name: str) -> Entity:
     with get_session() as session:
-        object: Object | None = session.exec(
-            select(Object).where(Object.name == name)
+        object: Entity | None = session.exec(
+            select(Entity).where(Entity.name == name)
         ).first()
 
         if not object:
@@ -40,7 +40,7 @@ def get_class(name: str) -> Class:
         return class_
 
 
-def set_is(a: Object | Class, b: Class) -> Is_:
+def set_is(a: Entity | Class, b: Class) -> Is_:
     with get_session() as session:
         exists: Is_ | None = session.exec(
             select(Is_).where(Is_.a_id == a.id).where(Is_.b_id == b.id)
@@ -51,7 +51,7 @@ def set_is(a: Object | Class, b: Class) -> Is_:
 
         is_ = Is_(
             a_id=a.id,
-            a_kind=EntityKind.object if isinstance(a, Object) else EntityKind.class_,
+            a_kind=EntityKind.object if isinstance(a, Entity) else EntityKind.class_,
             b_id=b.id,
         )
 

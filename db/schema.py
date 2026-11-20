@@ -4,25 +4,109 @@ from datetime import UTC, datetime
 from enum import Enum
 from uuid import UUID, uuid7
 
-from sqlmodel import Field, SQLModel, UniqueConstraint
+from sqlmodel import JSON, CheckConstraint, Field, SQLModel, UniqueConstraint
 
 
 def utc_now() -> datetime:
     return datetime.now(UTC)
 
 
-class Class(SQLModel, table=True):
+class EntityClass(SQLModel, table=True):
+    id: UUID = Field(default_factory=uuid7, primary_key=True)
+    name: str = Field(index=True)
+    definition: str = Field(unique=True, index=True)
+
+
+class Entity(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid7, primary_key=True)
 
-    name: str
+    name: str = Field(index=True)
+    definition: str = Field(unique=True, index=True)
+
+
+class EntityClassMembership(SQLModel, table=True):
+    __table_args__ = (UniqueConstraint("entity_id", "class_id"),)
+    id: UUID = Field(default_factory=uuid7, primary_key=True)
+
+    entity_id: UUID = Field(foreign_key="entity.id")
+    class_id: UUID = Field(foreign_key="class.id")
+
+
+class PredicateArity(str, Enum):
+    unary = "unary"
+    binary = "binary"
+    scalar = "scalar"
+    categorical = "categorical"
+
+
+class Predicate(SQLModel, table=True):
+    id: UUID = Field(default_factory=uuid7, primary_key=True)
+
+    name: str = Field(index=True)
+    definition: str
+    arity: PredicateArity
+
+
+class Variable(SQLModel, table=True):
+    __table_args__ = UniqueConstraint("entity_id", "predicate_id", "context_key")
+    id: UUID = Field(default_factory=uuid7, primary_key=True)
+
+    entity_id: UUID = Field(foreign_key="entity.id")
+    predicate_id: UUID = Field(foreign_key="predicate.id")
+
+
+class Claim(SQLModel, table=True):
+    id: UUID = Field(default_factory=uuid7, primary_key=True)
+
+    source_variable_id: UUID = Field(foreign_key="variable.id", index=True)
+    relation_predicate_id: UUID = Field(foreign_key="predicate.id", index=True)
+    target_variable_id: UUID = Field(foreign_key="variable.id")
+    # Conditions should be included in the variables
+
+
+class Market(SQLModel, table=True):
+    __table_args__ = (
+        CheckConstraint(
+            """
+            (variable_id IS NOT NULL AND claim_id IS NULL)
+            OR
+            (variable_id IS NULL AND claim_id IS NOT NULL)
+            """,
+            name="ck_market_single_target",
+        ),
+    )
+
+    id: UUID = Field(default_factory=uuid7, primary_key=True)
+
+    question: str
+
+    # A market measures either a variable or a claim.
+    variable_id: UUID | None = Field(
+        default=None,
+        foreign_key="variable.id",
+    )
+
+    claim_id: UUID | None = Field(
+        default=None,
+        foreign_key="claim.id",
+    )
+
+
+class Relationship(SQLModel, table=True):
+    id: UUID = Field(default_factory=uuid7, primary_key=True)
+    predicate_id: UUID = Field(foreign_key="predicate.id")
+
     definition: str
 
 
-class Object(SQLModel, table=True):
+class RelationshipParticipant(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid7, primary_key=True)
 
-    name: str
-    definition: str
+    relationship_id: UUID = Field(foreign_key="relationship.id")
+    variable_id: UUID = Field(foreign_key="variable.id")
+
+    role: str
+    position: int
 
 
 class Assumption(SQLModel, table=True):
@@ -64,8 +148,3 @@ class Value(SQLModel, table=True):
     value: int
     #: how much the number is believed; a parametric market collapsed to a point.
     belief: float | None = None
-
-
-class Market(SQLModel, table=True):
-    id: UUID = Field(default_factory=uuid7, primary_key=True)
-    question: str = ""

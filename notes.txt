@@ -1,5 +1,7 @@
 System for counting reads for web vs for download to separate
 1GB max per peron
 
+For .chemical, it should be able to absorb default conditions, like temperature X, whatever the default currently is, and copy the default assumptions, not just relate as the default can change
+
 Can be used by governments, if someone realizes a restaurant may not be as clean as a score suggests they can vote against it
 

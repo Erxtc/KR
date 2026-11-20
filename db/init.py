@@ -1,16 +1,16 @@
 from sqlmodel import select
 
 from db.db import create_db, get_session
-from db.schema import Assumption, Class, Object
+from db.schema import Assumption, Class, Entity
 
 create_db()
 
-objects: list[Object] = [
-    Object(name="NS", definition="Dutch NS railway"),
-    Object(name="Sweden", definition="Sweden"),
-    Object(name="2030", definition="Year 2030"),
-    Object(name="FC Barcelona", definition="Football Team A Club"),
-    Object(name="Nottingham FC", definition="Football Team B Club"),
+objects: list[Entity] = [
+    Entity(name="NS", definition="Dutch NS railway"),
+    Entity(name="Sweden", definition="Sweden"),
+    Entity(name="2030", definition="Year 2030"),
+    Entity(name="FC Barcelona", definition="Football Team A Club"),
+    Entity(name="Nottingham FC", definition="Football Team B Club"),
 ]
 
 classes = [
@@ -44,7 +44,7 @@ assumptions = [
 def load_db() -> None:
     with get_session() as session:
         seed_records = (
-            (Object, objects),
+            (Entity, objects),
             (Class, classes),
             (Assumption, assumptions),
         )
